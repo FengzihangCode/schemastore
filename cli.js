@@ -909,7 +909,7 @@ async function taskMaintenance() {
 }
 
 async function taskBuildWebsite() {
-  await fs.mkdir('./website', { recursive: true })
+  await fs.mkdir('./website/schemas/json', { recursive: true })
   await Promise.all(
     SchemasToBeTested.map((schemaName) => {
       return fs
@@ -928,6 +928,30 @@ async function taskBuildWebsite() {
         .copyFile(
           path.join(SchemaDir, schemaName),
           path.join('./website', path.parse(schemaName).name),
+        )
+        .catch((err) => {
+          if (err.code !== 'EISDIR') throw err
+        })
+    }),
+  )
+  await Promise.all(
+    SchemasToBeTested.map((schemaName) => {
+      return fs
+        .copyFile(
+          path.join(SchemaDir, schemaName),
+          path.join('./website/schemas/json', schemaName),
+        )
+        .catch((err) => {
+          if (err.code !== 'EISDIR') throw err
+        })
+    }),
+  )
+  await Promise.all(
+    SchemasToBeTested.map((schemaName) => {
+      return fs
+        .copyFile(
+          path.join(SchemaDir, schemaName),
+          path.join('./website/schemas/json', path.parse(schemaName).name),
         )
         .catch((err) => {
           if (err.code !== 'EISDIR') throw err
@@ -971,7 +995,7 @@ async function taskBuildWebsite() {
   <h3 id="api">Public API</h3>
   <p>
     <img src="/img/api.png" width="256" height="88" alt="Public API for JSON Schemas" class="left" />
-    The JSON <a href="~/api/json/catalog.json">API</a> contains a list of JSON Schema files for known JSON file formats.
+    The JSON <a href="/api/json/catalog.json">API</a> contains a list of JSON Schema files for known JSON file formats.
     Each schema file can be used in tooling such as command line validators, editor auto-completion etc.
   </p>
   <p>
